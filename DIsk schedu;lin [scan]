@@ -1,0 +1,48 @@
+#include <stdio.h>
+#include <stdlib.h> // Include the stdlib.h header for abs function
+
+int main() {
+    int request[] = {176, 79, 34, 60, 92, 11, 41, 114};
+    int head = 50; // Ensure this value is within the range of requests
+    int size = sizeof(request) / sizeof(request[0]);
+    int direction = 1; // 1 for up, -1 for down
+    int total_head_movement = 0;
+
+    // Sort the requests
+    for (int i = 0; i < size - 1; i++) {
+        for (int j = 0; j < size - i - 1; j++) {
+            if (request[j] > request[j + 1]) {
+                int temp = request[j];
+                request[j] = request[j + 1];
+                request[j + 1] = temp;
+            }
+        }
+    }
+
+    // Find the position of the head in the sorted array
+    int pos;
+    for (pos = 0; pos < size; pos++) {
+        if (request[pos] >= head) {
+            break;
+        }
+    }
+
+    // Move towards the end of the disk
+    for (int i = pos; i < size; i++) {
+        total_head_movement += abs(head - request[i]);
+        head = request[i];
+    }
+
+    // Move to the end of the disk
+    total_head_movement += abs(head - 199);
+    head = 199;
+
+    // Move towards the beginning of the disk
+    for (int i = pos - 1; i >= 0; i--) {
+        total_head_movement += abs(head - request[i]);
+        head = request[i];
+    }
+
+    printf("Total head movement: %d\n", total_head_movement);
+    return 0;
+}
