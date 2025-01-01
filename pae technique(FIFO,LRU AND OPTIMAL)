@@ -1,0 +1,161 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+#define MAX 10
+
+int page[MAX], frame[MAX], n, m, i, j, k, count, pos, pageFaults;
+
+void initialize() {
+    for (i = 0; i < MAX; i++) {
+        page[i] = -1;
+        frame[i] = -1;
+    }
+}
+
+void FIFO() {
+    initialize();
+    printf("FIFO Page Replacement:\n");
+    for (i = 0; i < n; i++) {
+        count = 0;
+        for (j = 0; j < m; j++) {
+            if (frame[j] == page[i]) {
+                count++;
+                break;
+            }
+        }
+        if (count == 0) {
+            for (j = 0; j < m; j++) {
+                if (frame[j] == -1) {
+                    frame[j] = page[i];
+                    break;
+                }
+            }
+            if (j == m) {
+                frame[pos] = page[i];
+                pos = (pos + 1) % m;
+            }
+            pageFaults++;
+        }
+        printf("Page: %d Frame: ", page[i]);
+        for (j = 0; j < m; j++) {
+            printf("%d ", frame[j]);
+        }
+        printf("\n");
+    }
+    printf("Total Page Faults: %d\n", pageFaults);
+}
+
+void Optimal() {
+    initialize();
+    printf("Optimal Page Replacement:\n");
+    for (i = 0; i < n; i++) {
+        count = 0;
+        for (j = 0; j < m; j++) {
+            if (frame[j] == page[i]) {
+                count++;
+                break;
+            }
+        }
+        if (count == 0) {
+            for (j = 0; j < m; j++) {
+                if (frame[j] == -1) {
+                    frame[j] = page[i];
+                    break;
+                }
+            }
+            if (j == m) {
+                int farthest = -1, index;
+                for (j = 0; j < m; j++) {
+                    int k;
+                    for (k = i + 1; k < n; k++) {
+                        if (frame[j] == page[k]) {
+                            if (k > farthest) {
+                                farthest = k;
+                                index = j;
+                            }
+                            break;
+                        }
+                    }
+                    if (k == n) {
+                        index = j;
+                        break;
+                    }
+                }
+                frame[index] = page[i];
+            }
+            pageFaults++;
+        }
+        printf("Page: %d Frame: ", page[i]);
+        for (j = 0; j < m; j++) {
+            printf("%d ", frame[j]);
+        }
+        printf("\n");
+    }
+    printf("Total Page Faults: %d\n", pageFaults);
+}
+
+void LRU() {
+    initialize();
+    printf("LRU Page Replacement:\n");
+    for (i = 0; i < n; i++) {
+        count = 0;
+        for (j = 0; j < m; j++) {
+            if (frame[j] == page[i]) {
+                count++;
+                break;
+            }
+        }
+        if (count == 0) {
+            for (j = 0; j < m; j++) {
+                if (frame[j] == -1) {
+                    frame[j] = page[i];
+                    break;
+                }
+            }
+            if (j == m) {
+                int leastRecentlyUsed = -1, index;
+                for (j = 0; j < m; j++) {
+                    int k;
+                    for (k = i - 1; k >= 0; k--) {
+                        if (frame[j] == page[k]) {
+                            if (k < leastRecentlyUsed || leastRecentlyUsed == -1) {
+                                leastRecentlyUsed = k;
+                                index = j;
+                            }
+                            break;
+                        }
+                    }
+                }
+                frame[index] = page[i];
+            }
+            pageFaults++;
+        }
+        printf("Page: %d Frame: ", page[i]);
+        for (j = 0; j < m; j++) {
+            printf("%d ", frame[j]);
+        }
+        printf("\n");
+    }
+    printf("Total Page Faults: %d\n", pageFaults);
+}
+
+int main() {
+    printf("Enter number of pages: ");
+    scanf("%d", &n);
+    printf("Enter number of frames: ");
+    scanf("%d", &m);
+    printf("Enter pages: ");
+    for (i = 0; i < n; i++) {
+        scanf("%d", &page[i]);
+    }
+    pos = 0;
+    pageFaults = 0;
+    FIFO();
+    pageFaults = 0;
+    pos = 0;
+    Optimal();
+    pageFaults = 0;
+    pos = 0;
+    LRU();
+    return 0;
+}
