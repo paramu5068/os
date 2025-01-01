@@ -1,0 +1,103 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+#define MAX_BLOCKS 10
+#define MAX_PROCESSES 5
+
+int blocks[MAX_BLOCKS], processes[MAX_PROCESSES];
+int blockSize[MAX_BLOCKS], processSize[MAX_PROCESSES];
+
+void bestFit() {
+    for (int i = 0; i < MAX_PROCESSES; i++) {
+        int bestIdx = -1;
+        for (int j = 0; j < MAX_BLOCKS; j++) {
+            if (blocks[j] >= processSize[i]) {
+                if (bestIdx == -1 || blockSize[j] < blockSize[bestIdx]) {
+                    bestIdx = j;
+                }
+            }
+        }
+        if (bestIdx != -1) {
+            blocks[bestIdx] -= processSize[i];
+            printf("Process %d allocated to Block %d\n", i + 1, bestIdx + 1);
+        } else {
+            printf("Process %d cannot be allocated\n", i + 1);
+        }
+    }
+}
+
+void worstFit() {
+    for (int i = 0; i < MAX_PROCESSES; i++) {
+        int worstIdx = -1;
+        for (int j = 0; j < MAX_BLOCKS; j++) {
+            if (blocks[j] >= processSize[i]) {
+                if (worstIdx == -1 || blockSize[j] > blockSize[worstIdx]) {
+                    worstIdx = j;
+                }
+            }
+        }
+        if (worstIdx != -1) {
+            blocks[worstIdx] -= processSize[i];
+            printf("Process %d allocated to Block %d\n", i + 1, worstIdx + 1);
+        } else {
+            printf("Process %d cannot be allocated\n", i + 1);
+        }
+    }
+}
+
+void firstFit() {
+    for (int i = 0; i < MAX_PROCESSES; i++) {
+        for (int j = 0; j < MAX_BLOCKS; j++) {
+            if (blocks[j] >= processSize[i]) {
+                blocks[j] -= processSize[i];
+                printf("Process %d allocated to Block %d\n", i + 1, j + 1);
+                break;
+            }
+            if (j == MAX_BLOCKS - 1) {
+                printf("Process %d cannot be allocated\n", i + 1);
+            }
+        }
+    }
+}
+
+int main() {
+    // Initialize block sizes
+    blockSize[0] = 100; blocks[0] = 100;
+    blockSize[1] = 500; blocks[1] = 500;
+    blockSize[2] = 200; blocks[2] = 200;
+    blockSize[3] = 300; blocks[3] = 300;
+    blockSize[4] = 600; blocks[4] = 600;
+    blockSize[5] = 400; blocks[5] = 400;
+    blockSize[6] = 250; blocks[6] = 250;
+    blockSize[7] = 350; blocks[7] = 350;
+    blockSize[8] = 450; blocks[8] = 450;
+    blockSize[9] = 150; blocks[9] = 150;
+
+    // Initialize process sizes
+    processSize[0] = 212;
+    processSize[1] = 417;
+    processSize[2] = 112;
+    processSize[3] = 426;
+    processSize[4] = 300;
+
+    printf("Best Fit Allocation:\n");
+    bestFit();
+    
+    // Reset blocks for next allocation
+    for (int i = 0; i < MAX_BLOCKS; i++) {
+        blocks[i] = blockSize[i];
+    }
+
+    printf("\nWorst Fit Allocation:\n");
+    worstFit();
+    
+    // Reset blocks for next allocation
+    for (int i = 0; i < MAX_BLOCKS; i++) {
+        blocks[i] = blockSize[i];
+    }
+
+    printf("\nFirst Fit Allocation:\n");
+    firstFit();
+
+    return 0;
+}
